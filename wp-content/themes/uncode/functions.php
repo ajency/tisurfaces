@@ -169,7 +169,7 @@ function myplugin_register_form() {
 
 //2. Add validation.
 if(is_page('my-account')){
-	add_action( 'woocommerce_register_post', 'myplugin_registration_errors', 10, 3 );	
+	add_action( 'woocommerce_register_post', 'myplugin_registration_errors', 10, 3 );
 }
 function myplugin_registration_errors(  $username, $email, $validation_errors ) {
 	if ( empty( $_POST['role'] ) || ! empty( $_POST['role'] ) && trim( $_POST['role'] ) == '' ) {
@@ -191,7 +191,17 @@ add_filter('wp_mail','handle_wp_mail');
 
 function handle_wp_mail($atts) {
 
-    if (isset ($atts ['subject']) && substr_count($atts ['subject'],'Password reset for')>0 ) {
+    if (isset ($atts ['subject']) && substr_count($atts ['subject'],'Your username and password info')>0 ) {
+        if (isset($atts['message'])) {
+           $user = get_user_by( 'email', $atts['to'] );
+           $key = get_password_reset_key( $user );
+           $url= network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user->user_login), 'login');
+           $data=array('email'=>$atts['to'],'display_name'=>$user->display_name);
+           $atts['subject']='Welcome to tiSURFACES';
+           $atts['message'] = generate_email_template('registration_mail',$data);
+        }
+    }
+    else if (isset ($atts ['subject']) && substr_count($atts ['subject'],'Password reset for')>0 ) {
         if (isset($atts['message'])) {
             $user = get_user_by( 'email', $atts['to'] );
 
@@ -413,7 +423,7 @@ $main_html='<!doctype html>
     @tip Set the background color and borders for your email\'s preheader area.
     */
         #templatePreheader{
-            /*@editable*/background-color:#f2f2f2;
+            /*@editable*/background-color:#000000;
             /*@editable*/background-image:none;
             /*@editable*/background-repeat:no-repeat;
             /*@editable*/background-position:center;
@@ -832,6 +842,24 @@ $main_html='<!doctype html>
 
 
      switch ($mail_type) {
+
+                        case 'registration_mail':
+
+                                $table_html.='
+
+                                                <h1 style="text-align: center;font-weight: 100;margin-bottom: 15px;color: #313234;"><span style="border-bottom: 2px solid #dbc698;">D</span>ear '.$data['display_name'].'</h1>
+
+                                                <div style="font-weight: 100;line-height: 1.5;font-size: 17px;">
+                                                <p>Welcome to <a href="'.$site_url.'" style="color: #d53c2a;text-decoration: none;font-weight: 500;">tiSURFACES</a><br><br></p>
+
+                                                <p style="font-size: 17px;font-weight: 100;margin: 15px 0;line-height: 1.5;">Click the link below and you\'ll be redirected to tiSURFACES site from which you can set a password.</p>
+
+                                                <a href="'.$data['url'].'" style="background-color: #d40000;color: #fff;text-decoration: none;font-weight: 100;padding: 10px 20px;margin: 10px 0;display: inline-block;cursor:pointer;font-size: 16px;">Set Password</a>
+
+
+                                                </div>
+                                           ';
+                                                    break;
 
 
                             case 'passwordreset_mail':

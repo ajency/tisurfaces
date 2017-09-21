@@ -23,11 +23,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 wc_print_notices();
 
 ?>
-<?php 
+<?php
 // cks - checking if user verified or not
 	 $user = wp_get_current_user();
-	 print_r($user);
-	
+	 // print_r($user);
+
 	 if ( !in_array( 'customer', (array) $user->roles ) ) {
 			$verified = get_field('verify_user', 'user_2');
 			if($verified == 'No'){ ?>
