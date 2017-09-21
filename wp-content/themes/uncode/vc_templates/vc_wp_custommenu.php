@@ -5,7 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $title = $nav_menu = $nav_menu_horizontal = $el_class = '';
 $output = '';
-
 extract(shortcode_atts(array(
 	'title' => '',
 	'nav_menu' => '',
