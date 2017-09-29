@@ -196,7 +196,7 @@ function handle_wp_mail($atts) {
            $user = get_user_by( 'email', $atts['to'] );
            $key = get_password_reset_key( $user );
            $url= network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user->user_login), 'login');
-           $data=array('email'=>$atts['to'],'display_name'=>$user->display_name);
+           $data=array('email'=>$atts['to'],'display_name'=>$user->display_name,'message'=>$atts['message'],'url'=>$url);
            $atts['subject']='Welcome to tiSURFACES';
            $atts['message'] = generate_email_template('registration_mail',$data);
         }
@@ -850,7 +850,7 @@ $main_html='<!doctype html>
                                                 <h1 style="text-align: center;font-weight: 100;margin-bottom: 15px;color: #313234;"><span style="border-bottom: 2px solid #dbc698;">D</span>ear '.$data['display_name'].'</h1>
 
                                                 <div style="font-weight: 100;line-height: 1.5;font-size: 17px;">
-                                                <p>Welcome to <a href="'.$site_url.'" style="color: #d53c2a;text-decoration: none;font-weight: 500;">tiSURFACES</a><br><br></p>
+                                                <p>Welcome to <a href="'.$site_url.'" style="color: #d53c2a;text-decoration: none;font-weight: 500;">tiSURFACES</a><br></p>
 
                                                 <p style="font-size: 17px;font-weight: 100;margin: 15px 0;line-height: 1.5;">Click the link below and you\'ll be redirected to tiSURFACES site from which you can set a password.</p>
 
