@@ -7,15 +7,15 @@
 
 $ok_php = true;
 if ( function_exists( 'phpversion' ) ) {
-	$php_version = phpversion();
-	if (version_compare($php_version,'5.3.0') < 0) $ok_php = false;
+    $php_version = phpversion();
+    if (version_compare($php_version,'5.3.0') < 0) $ok_php = false;
 }
 if (!$ok_php && !is_admin()) {
-	$title = esc_html__( 'PHP version obsolete','uncode' );
-	$html = '<h2>' . esc_html__( 'Ooops, obsolete PHP version' ,'uncode' ) . '</h2>';
-	$html .= '<p>' . sprintf( wp_kses( 'We have coded the Uncode theme to run with modern technology and we have decided not to support the PHP version 5.2.x just because we want to challenge our customer to adopt what\'s best for their interests.%sBy running obsolete version of PHP like 5.2 your server will be vulnerable to attacks since it\'s not longer supported and the last update was done the 06 January 2011.%sSo please ask your host to update to a newer PHP version for FREE.%sYou can also check for reference this post of WordPress.org <a href="https://wordpress.org/about/requirements/">https://wordpress.org/about/requirements/</a>' ,'uncode', array('a' => 'href') ), '</p><p>', '</p><p>', '</p><p>') . '</p>';
+    $title = esc_html__( 'PHP version obsolete','uncode' );
+    $html = '<h2>' . esc_html__( 'Ooops, obsolete PHP version' ,'uncode' ) . '</h2>';
+    $html .= '<p>' . sprintf( wp_kses( 'We have coded the Uncode theme to run with modern technology and we have decided not to support the PHP version 5.2.x just because we want to challenge our customer to adopt what\'s best for their interests.%sBy running obsolete version of PHP like 5.2 your server will be vulnerable to attacks since it\'s not longer supported and the last update was done the 06 January 2011.%sSo please ask your host to update to a newer PHP version for FREE.%sYou can also check for reference this post of WordPress.org <a href="https://wordpress.org/about/requirements/">https://wordpress.org/about/requirements/</a>' ,'uncode', array('a' => 'href') ), '</p><p>', '</p><p>', '</p><p>') . '</p>';
 
-	wp_die( $html, $title, array('response' => 403) );
+    wp_die( $html, $title, array('response' => 403) );
 }
 
 /**
@@ -123,7 +123,7 @@ require_once get_template_directory() . '/core/inc/customizer.php';
  * Customizer WooCommerce additions.
  */
 if (class_exists( 'WooCommerce' )) {
-	require_once get_template_directory() . '/core/inc/customizer-woocommerce.php';
+    require_once get_template_directory() . '/core/inc/customizer-woocommerce.php';
 }
 
 /**
@@ -148,18 +148,18 @@ add_role( 'Dealer', 'Dealer', array(
 // adding custom role finish here
 
 // custom code
-	//1. Add a new form element...
+    //1. Add a new form element...
 add_action( 'woocommerce_register_form', 'myplugin_register_form' );
 function myplugin_register_form() {
 
     global $wp_roles;
     echo '<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">';
-   	echo '<label for="role">'._e('Register as').'</lable>';
+    echo '<label for="role">'._e('Register as').'</lable>';
     echo '<select name="role" class="input">';
     echo '<option value="">Select Role</option>';
     foreach ( $wp_roles->roles as $key=>$value ) {
        // Exclude default roles such as administrator etc. Add your own
-       		if($key == 'customer' || $key == 'Dealer'){
+            if($key == 'customer' || $key == 'Dealer'){
           echo '<option value="'.$key.'">'.$value['name'].'</option>';
        }
     }
@@ -169,10 +169,10 @@ function myplugin_register_form() {
 
 //2. Add validation.
 if(is_page('my-account')){
-	add_action( 'woocommerce_register_post', 'myplugin_registration_errors', 10, 3 );
+    add_action( 'woocommerce_register_post', 'myplugin_registration_errors', 10, 3 );
 }
 function myplugin_registration_errors(  $username, $email, $validation_errors ) {
-	if ( empty( $_POST['role'] ) || ! empty( $_POST['role'] ) && trim( $_POST['role'] ) == '' ) {
+    if ( empty( $_POST['role'] ) || ! empty( $_POST['role'] ) && trim( $_POST['role'] ) == '' ) {
          $validation_errors->add( 'role_error', __( '<strong>ERROR</strong>: You must include a role.', 'mydomain' ) );
     }
 
@@ -950,5 +950,68 @@ $main_html='<!doctype html>
 
 return $main_html.$table_html;
 }
+
+function tisurface_woocommerce_cart_item_quantity($product_quantity, $cart_item_key, $cart_item)
+{
+    $user_id        = get_current_user_id();
+    $role_name = tisf_get_user_role($user_id);
+$role_arr=array('customer','subscriber','Dealer');
+
+    if (in_array($role_name,$role_arr)){
+        if ($cart_item['quantity'] < 20) {
+            $html = '<div class="get-discount"><i class="fa fa-unlock"></i> Unlock a special discount by adding more than 20 units of this product to cart!</div>';
+        } else if ($cart_item['quantity'] >= 20) {
+
+            $html = '<div class="won-discount"><i class="fa fa-smile-o"></i> You got a special discount for ordering more than 20 units of this products</div>';
+        }
+
+        return $product_quantity . $html;
+    }
+return $product_quantity;
+}
+
+
+add_filter( 'woocommerce_cart_item_quantity', 'tisurface_woocommerce_cart_item_quantity', 10, 3 );
+
+
+function tisf_get_user_role( $user = null ) {
+    $user = $user ? new WP_User( $user ) : wp_get_current_user();
+    return $user->roles ? $user->roles[0] : false;
+}
+
+
+/*Add to cart*/
+add_filter( 'woocommerce_product_single_add_to_cart_text', 'woo_custom_cart_button_text' );
+function woo_custom_cart_button_text() {
+    return __( 'Request a Quote', 'woocommerce' );
+}
+
+/*Proceed to Checkout*/
+remove_action( 'woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20 );
+add_action('woocommerce_proceed_to_checkout', 'sm_woo_custom_checkout_button_text',20);
+function sm_woo_custom_checkout_button_text() {
+    $checkout_url = WC()->cart->get_checkout_url();
+  ?>
+       <a href="<?php echo $checkout_url; ?>" class="checkout-button btn btn-default alt wc-forward"><?php  _e( 'Submit Request', 'woocommerce' ); ?></a>
+  <?php
+}
+
+
+/* WooCommerce: The Code Below Removes Checkout Fields */
+add_filter( 'woocommerce_checkout_fields' , 'custom_override_checkout_fields' );
+
+function custom_override_checkout_fields( $fields ) {
+unset($fields['billing']['billing_address_1']);
+unset($fields['billing']['billing_address_2']);
+unset($fields['billing']['billing_city']);
+unset($fields['billing']['billing_postcode']);
+unset($fields['billing']['billing_country']);
+unset($fields['billing']['billing_state']);
+unset($fields['account']['account_username']);
+unset($fields['account']['account_password']);
+unset($fields['account']['account_password-2']);
+return $fields;
+}
+
 
 // custom code finish
