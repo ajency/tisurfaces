@@ -1013,5 +1013,34 @@ unset($fields['account']['account_password-2']);
 return $fields;
 }
 
+/**
+ * Custom text on the receipt page.
+ */
+function isa_order_received_text( $text, $order ) {
+    return '<span class="thank-you">Thank You. Your request for quote has been received. We will get back to you with the best quote.</span>';
+}
+add_filter('woocommerce_thankyou_order_received_text', 'isa_order_received_text', 10, 2 );
+
+
+//login-logout menu link
+add_filter('wp_nav_menu_items', 'add_login_logout_link', 10, 2);
+function add_login_logout_link($items, $args) {
+        ob_start();
+        wp_loginout('index.php');
+        $loginoutlink = ob_get_contents();
+        ob_end_clean();
+        $items .= '<li class="login-out">'. $loginoutlink .'</li>';
+    return $items;
+}
+
+/* checkout page: place order to submit request */
+add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text' ); 
+
+function woo_custom_order_button_text() {
+    return __( 'submit request', 'woocommerce' ); 
+}
+
+
+
 
 // custom code finish
