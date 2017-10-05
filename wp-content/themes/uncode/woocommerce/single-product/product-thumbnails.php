@@ -63,12 +63,13 @@ if ( $attachment_ids ) {
 				$media_data = ' data-uniqueid="'.$attachment_id.'-'.big_rand().'" data-guid="'.$image_attributes->guid.'" data-path="'.$image_attributes->path.'" data-width="'.$image_metavalues['width'].'" data-height="'.$image_metavalues['height'].'" data-singlew="2" data-singleh="'.($crop ? 2 / $thumb_ratio : null).'" data-crop="'.$crop.'"';
 			}
 			$image_link = $image_attributes->guid;
-			$image = '<img'.$media_class.' src="'.$image_resized['url'].'" width="'.$image_resized['width'].'" height="'.$image_resized['height'].'" alt=""'.$media_data.' />';
 
 			$image_class = esc_attr( implode( ' ', $classes ) );
 			$image_title = esc_attr( get_the_title( $attachment_id ) );
+			
+			$image = '<div class="img-wrap"><img'.$media_class.' src="'.$image_resized['url'].'" width="'.$image_resized['width'].'" height="'.$image_resized['height'].'" alt=""'.$image_title.' /></div><span class="product-img-title">'.$image_title.'</span>';
 
-			echo apply_filters( 'woocommerce_single_product_image_thumbnail_html', sprintf( '<a href="%s" class="%s" title="%s" data-options="thumbnail: \''.$image_resized['url'].'\'" data-lbox="ilightbox_gallery-' . $gallery_id . '">%s</a>', $image_link, $image_class, $image_title, $image ), $attachment_id, $post->ID, $image_class );
+			echo apply_filters( 'woocommerce_single_product_image_thumbnail_html', sprintf( '<a href="%s" class="%s" title="%s" data-options="thumbnail: \''.$image_resized['url'].'\'" data-title="'.$image_title.'" data-lbox="ilightbox_gallery-' . $gallery_id . '">%s</a>', $image_link, $image_class, $image_title, $image ), $attachment_id, $post->ID, $image_class );
 
 			$loop++;
 		}

@@ -23,6 +23,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 wc_print_notices();
 
 ?>
+<?php
+// cks - checking if user verified or not
+	 $user = wp_get_current_user();
+	 // print_r($user);
+
+	 if ( !in_array( 'customer', (array) $user->roles ) ) {
+			$verified = get_field('verify_user', 'user_2');
+			if($verified == 'No'){ ?>
+			<h3>Your account is registered as <?php echo $user->roles[0]; ?> and not verified by admin, Please contact to admin in order to shop...!</h3>
+<?php	}
+	 }
+?>
 <div class="column_parent col-lg-12 no-h-padding no-top-padding no-bottom-padding">
 	<div class="uncol">
 		<div class="uncoltable">

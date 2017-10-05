@@ -2903,13 +2903,13 @@ select,
 .seldiv,
 .select2-choice {
   display: block;
-  font-size: 14px;
+  font-size: 16px;
   line-height: initial;
   margin: 9px 0px 0px 0px;
-  padding: 10px 15px 10px 15px;
+  padding: 7px 15px 7px 15px;
   border-width: 1px;
   border-style: solid;
-  border-radius: 2px;
+  border-radius: 3px;
   font-weight: normal;
   border: 1px solid transparent;
 }
