@@ -28,7 +28,8 @@ $args = apply_filters( 'woocommerce_related_products_args', array(
 	'posts_per_page'       => $posts_per_page,
 	'orderby'              => $orderby,
 	'post__in'             => $related,
-	'post__not_in'         => array( $product->id )
+	'post__not_in'         => array( $product->id ),
+  	'meta_value'           => 'instock'
 ) );
 
 $products = new WP_Query( $args );
