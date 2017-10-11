@@ -326,4 +326,11 @@ function custom_shop_page_redirect(){
     }
 }
 add_action( 'template_redirect', 'custom_shop_page_redirect' );
+
+// logout redirect
+add_action( 'wp_logout', 'auto_redirect_external_after_logout');
+function auto_redirect_external_after_logout(){
+  wp_redirect( home_url('/my-account/') );
+  exit();
+}
 // custom code finish
