@@ -983,7 +983,7 @@ function tisf_get_user_role( $user = null ) {
 /*Add to cart*/
 add_filter( 'woocommerce_product_single_add_to_cart_text', 'woo_custom_cart_button_text' );
 function woo_custom_cart_button_text() {
-    return __( 'Request a Quote', 'woocommerce' );
+    return __( 'Request Quote', 'woocommerce' );
 }
 
 /*Proceed to Checkout*/
@@ -1035,12 +1035,22 @@ function add_login_logout_link($items, $args) {
 
 /* checkout page: place order to submit request */
 add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text' ); 
-
 function woo_custom_order_button_text() {
     return __( 'submit request', 'woocommerce' ); 
 }
 
-
-
-
+function custom_shop_page_redirect(){
+	
+         if (is_product_category()) {
+            
+            global $wp_query;
+            
+            $cat = $wp_query->get_queried_object();
+            if($cat->slug=='all' ){
+    			wp_redirect( home_url('/shop') );
+                exit();
+    		} 
+    }
+} 
+add_action( 'template_redirect', 'custom_shop_page_redirect' );
 // custom code finish
