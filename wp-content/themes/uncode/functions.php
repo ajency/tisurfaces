@@ -215,6 +215,20 @@ function handle_wp_mail($atts) {
 
         }
     }
+    elseif (isset ($atts ['subject']) && substr_count($atts ['subject'],'order is being processed')>0) {
+        if (isset($atts['message'])) {
+            $user = get_user_by( 'email', $atts['to'] );
+
+            $key = get_password_reset_key( $user );
+
+            $url= network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user->user_login), 'login');
+
+            $data=array('email'=>$atts['to'],'display_name'=>$user->display_name,'message'=>$atts['message'],'url'=>$url);
+
+           $atts['message'] = generate_email_template('passwordreset_mail',$data);
+
+        }
+    }
     return ($atts);
 }
 
@@ -373,9 +387,9 @@ add_action( 'woocommerce_process_product_meta', 'tisurfaces_woo_add_custom_gener
 
 /* add text below addto cart btn */
 function tisurfaces_content_after_addtocart_button_func() {
-    if ( 'yes' === get_option( 'woocommerce_manage_stock' ) ) {
-        
-       $product_id=get_the_id();
+    $product_id=get_the_id();
+    if ( 'yes' === get_post_meta( $product_id, '_manage_stock',true ) ) {
+           
        $_in_transit= get_post_meta( $product_id, '_in_transit', true );
        $_stock= get_post_meta( $product_id, '_stock', true );
     

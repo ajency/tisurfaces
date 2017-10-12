@@ -43,7 +43,7 @@ else if($email_heading=='Here is the Final Quote From Tisurfaces'){
 
 }
 
-else {
+
 ?>
 
 
@@ -52,7 +52,7 @@ else {
 <p><?php _e( "Cheque Payments :" ); ?></p>
 
 <?php
-}
+
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.
  * @hooked WC_Structured_Data::generate_order_data() Generates structured data.
