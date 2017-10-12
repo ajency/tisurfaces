@@ -23,14 +23,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * @hooked WC_Emails::email_header() Output the email header
  */
-do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
+do_action( 'woocommerce_email_header', $email_heading, $email );
+
+if($email_heading=='Order has been confirmed'){  
+  $data=maybe_unserialize( get_option('woocommerce_wc_order_status_email_58386_settings') );
+?>
+<p><?php _e($data['body_text']);  ?></p>
+
+<?php
+
+}
+
+else if($email_heading=='Here is the Final Quote From Tisurfaces'){  
+  $data=maybe_unserialize( get_option('woocommerce_wc_order_status_email_58368_settings') );
+?>
+<p><?php _e($data['body_text']);  ?></p>
+
+<?php
+
+}
+
+else {
+?>
+
 
 <p><?php _e( "As per the discussion we had, here is the final quote for the items you wish to purchase. Please make the payment via direct bank transfer or cheque (details below ) to process the order." ); ?></p>
 <p><?php _e( "Direct Bank Transfer : " ); ?></p>
 <p><?php _e( "Cheque Payments :" ); ?></p>
 
 <?php
-
+}
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.
  * @hooked WC_Structured_Data::generate_order_data() Generates structured data.
