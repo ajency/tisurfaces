@@ -320,9 +320,9 @@ function custom_shop_page_redirect(){
 
             $cat = $wp_query->get_queried_object();
             if($cat->slug=='all' ){
-    			wp_redirect( home_url('/shop') );
+                wp_redirect( home_url('/shop') );
                 exit();
-    		}
+            }
     }
 }
 add_action( 'template_redirect', 'custom_shop_page_redirect' );
@@ -383,12 +383,12 @@ function tisurfaces_content_after_addtocart_button_func() {
         $_in_transit=0;
 
        if($_stock<=0 && $_in_transit<=0){
-            echo '<div  style="font-size:10px;">Currently this product is out of stock.You can still place the order,we will deliver it in 6-8 weeks</div>';
+            echo '<p  class="delivery-note">Currently this product is out of stock.You can still place the order,we will deliver it in <strong>6-8 weeks</strong></p>';
        }
        else{
-            echo '<div  style="font-size:10px;">Products in stock : '.$_stock.'
-            Products in transit to India: '.$_in_transit.'
-            You can pre-order the products and we will deliver it in 3-4 weeks. </div>';
+            echo '<p  class="delivery-note">Products in stock : <strong>'.$_stock.'</strong>.,
+            Products in transit to India: <strong>'.$_in_transit.'</strong><br>
+            You can pre-order the products and we will deliver it in <strong>3-4 weeks</strong>. </p>';
        }
         
     }
