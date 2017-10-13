@@ -396,7 +396,7 @@ function tisurfaces_content_after_addtocart_button_func() {
        if($_in_transit=='')
         $_in_transit=0;
 
-       if($_stock==0 && $_in_transit==0){
+       if($_stock<=0 && $_in_transit<=0){
             echo '<div  style="font-size:10px;">Currently this product is out of stock.You can still place the order,we will deliver it in 6-8 weeks</div>';
        }
        else{
