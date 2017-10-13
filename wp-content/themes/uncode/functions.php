@@ -215,20 +215,6 @@ function handle_wp_mail($atts) {
 
         }
     }
-    elseif (isset ($atts ['subject']) && substr_count($atts ['subject'],'order is being processed')>0) {
-        if (isset($atts['message'])) {
-            $user = get_user_by( 'email', $atts['to'] );
-
-            $key = get_password_reset_key( $user );
-
-            $url= network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user->user_login), 'login');
-
-            $data=array('email'=>$atts['to'],'display_name'=>$user->display_name,'message'=>$atts['message'],'url'=>$url);
-
-           $atts['message'] = generate_email_template('passwordreset_mail',$data);
-
-        }
-    }
     return ($atts);
 }
 
