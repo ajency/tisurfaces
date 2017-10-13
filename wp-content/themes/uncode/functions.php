@@ -333,4 +333,66 @@ function auto_redirect_external_after_logout(){
   wp_redirect( home_url('/my-account/') );
   exit();
 }
+
+
+// define the woocommerce_product_options_inventory_product_data callback 
+function tisurfaces_action_woocommerce_product_options_stock_fields() { 
+  
+     woocommerce_wp_text_input( 
+        array( 
+            'id'          => '_in_transit', 
+            'label'       => __( 'In Transit quantity', 'woocommerce' ), 
+            'placeholder' => '',
+            'desc_tip'    => 'true',
+            'class'    => '_in_transit',
+            'description' => __( 'In Transit qty', 'woocommerce' ),
+            'type'              => 'number', 
+            'custom_attributes' => array(
+                    'step'  => 'any',
+                    'min'   => '0'                   
+                )  
+        )
+    );
+
+}; 
+add_action( 'woocommerce_product_options_stock_fields', 'tisurfaces_action_woocommerce_product_options_stock_fields', 10, 0 ); 
+
+
+
+// Save extra stock Fields
+function tisurfaces_woo_add_custom_general_fields_save( $post_id ){
+    
+  
+    $woocommerce_text_field = isset($_POST['_in_transit']) ? $_POST['_in_transit'] : 0 ;
+    update_post_meta( $post_id, '_in_transit', esc_attr( $woocommerce_text_field ) );
+    
+}
+
+add_action( 'woocommerce_process_product_meta', 'tisurfaces_woo_add_custom_general_fields_save' );
+
+
+/* add text below addto cart btn */
+function tisurfaces_content_after_addtocart_button_func() {
+    $product_id=get_the_id();
+    if ( 'yes' === get_post_meta( $product_id, '_manage_stock',true ) ) {
+           
+       $_in_transit= get_post_meta( $product_id, '_in_transit', true );
+       $_stock= get_post_meta( $product_id, '_stock', true );
+    
+       if($_in_transit=='')
+        $_in_transit=0;
+
+       if($_stock<=0 && $_in_transit<=0){
+            echo '<div  style="font-size:10px;">Currently this product is out of stock.You can still place the order,we will deliver it in 6-8 weeks</div>';
+       }
+       else{
+            echo '<div  style="font-size:10px;">Products in stock : '.$_stock.'
+            Products in transit to India: '.$_in_transit.'
+            You can pre-order the products and we will deliver it in 3-4 weeks. </div>';
+       }
+        
+    }
+}
+add_action( 'woocommerce_after_add_to_cart_button', 'tisurfaces_content_after_addtocart_button_func' );
+
 // custom code finish

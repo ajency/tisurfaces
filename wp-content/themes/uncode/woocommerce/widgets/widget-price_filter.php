@@ -24,7 +24,7 @@ class Uncode_WC_Widget_Price_Filter extends WC_Widget {
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		wp_register_script( 'wc-jquery-ui-touchpunch', WC()->plugin_url() . '/assets/js/jquery-ui-touch-punch/jquery-ui-touch-punch' . $suffix . '.js', array( 'jquery-ui-slider' ), WC_VERSION, true );
 		wp_register_script( 'wc-price-slider', WC()->plugin_url() . '/assets/js/frontend/price-slider' . $suffix . '.js', array( 'jquery-ui-slider', 'wc-jquery-ui-touchpunch' ), WC_VERSION, true );
-		wp_localize_script( 'wc-price-slider', 'woocommerce_price_slider_params', array(
+		wp_localize_script( 'wc-price-slider', 'woocommerce_price_slider_params_theme', array(
 			'currency_symbol' 	=> get_woocommerce_currency_symbol(),
 			'currency_pos'      => get_option( 'woocommerce_currency_pos' ),
 			'min_price'			=> isset( $_GET['min_price'] ) ? esc_attr( $_GET['min_price'] ) : '',
