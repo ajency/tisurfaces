@@ -381,6 +381,17 @@ function uncode_equeue()
 			wp_add_inline_style('uncode-style', uncode_compress_css_inline($custom_css));
 		}
 	}
+	
+	$user_id        = get_current_user_id();
+    $role_name = tisf_get_user_role($user_id);
+    if($role_name=='Dealer'){
+		$custom_css1 = "
+					#menu-item-58350 {
+						display:none !important;
+					}
+					";
+		wp_add_inline_style( 'uncode-style', $custom_css1);
+	}
 
 }
 
