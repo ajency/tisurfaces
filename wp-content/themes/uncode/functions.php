@@ -408,4 +408,17 @@ function woo_remove_product_tabs( $tabs ) {
 //   return $tabs;
 // }
 
+
+// Edit WooCommerce dropdown menu item of shop page//
+// Options: menu_order, popularity, rating, date, price, price-desc
+
+function my_woocommerce_catalog_orderby( $orderby ) {
+  unset($orderby["menu_order"]);
+  unset($orderby["popularity"]);
+  unset($orderby["rating"]);
+  unset($orderby["date"]);
+  return $orderby;
+}
+add_filter( "woocommerce_catalog_orderby", "my_woocommerce_catalog_orderby", 20 );
+
 // custom code finish

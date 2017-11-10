@@ -30,10 +30,6 @@ $heading = apply_filters( 'woocommerce_product_additional_information_heading', 
 
 			<?php
 			  $additional_info_img =  get_post_meta(get_the_ID(),'additional_info_img', true);
-			  if ($additional_info_img == '')
-		  		{
-		  			$additional_info_img = 'http://via.placeholder.com/1024x768';
-		  		}
 			?>
 
 		</div>
@@ -43,7 +39,7 @@ $heading = apply_filters( 'woocommerce_product_additional_information_heading', 
 		<img src="<?php echo  $additional_info_img; ?>" class="thumbnail">
 	<?php }	?>
 
-	<div style="font-size: 17px; margin-top:10px; font-weight:600;">
-		<a href="http://www.tisurfaces.com/installation-instruction/" target="_blank">Click here to see installation instructions</a>
+	<div style="font-size: 16px; margin-top:10px; font-weight:600;">
+		<a href="http://www.tisurfaces.com/installation-instruction/" target="_blank" style="text-decoration: underline;">Click here to see installation instructions</a>
 	</div>
 </div>
