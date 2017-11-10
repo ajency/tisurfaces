@@ -335,37 +335,37 @@ function auto_redirect_external_after_logout(){
 }
 
 
-// define the woocommerce_product_options_inventory_product_data callback 
-function tisurfaces_action_woocommerce_product_options_stock_fields() { 
-  
-     woocommerce_wp_text_input( 
-        array( 
-            'id'          => '_in_transit', 
-            'label'       => __( 'In Transit quantity', 'woocommerce' ), 
+// define the woocommerce_product_options_inventory_product_data callback
+function tisurfaces_action_woocommerce_product_options_stock_fields() {
+
+     woocommerce_wp_text_input(
+        array(
+            'id'          => '_in_transit',
+            'label'       => __( 'In Transit quantity', 'woocommerce' ),
             'placeholder' => '',
             'desc_tip'    => 'true',
             'class'    => '_in_transit',
             'description' => __( 'In Transit qty', 'woocommerce' ),
-            'type'              => 'number', 
+            'type'              => 'number',
             'custom_attributes' => array(
                     'step'  => 'any',
-                    'min'   => '0'                   
-                )  
+                    'min'   => '0'
+                )
         )
     );
 
-}; 
-add_action( 'woocommerce_product_options_stock_fields', 'tisurfaces_action_woocommerce_product_options_stock_fields', 10, 0 ); 
+};
+add_action( 'woocommerce_product_options_stock_fields', 'tisurfaces_action_woocommerce_product_options_stock_fields', 10, 0 );
 
 
 
 // Save extra stock Fields
 function tisurfaces_woo_add_custom_general_fields_save( $post_id ){
-    
-  
+
+
     $woocommerce_text_field = isset($_POST['_in_transit']) ? $_POST['_in_transit'] : 0 ;
     update_post_meta( $post_id, '_in_transit', esc_attr( $woocommerce_text_field ) );
-    
+
 }
 
 add_action( 'woocommerce_process_product_meta', 'tisurfaces_woo_add_custom_general_fields_save' );
@@ -375,10 +375,10 @@ add_action( 'woocommerce_process_product_meta', 'tisurfaces_woo_add_custom_gener
 function tisurfaces_content_after_addtocart_button_func() {
     $product_id=get_the_id();
     if ( 'yes' === get_post_meta( $product_id, '_manage_stock',true ) ) {
-           
+
        $_in_transit= get_post_meta( $product_id, '_in_transit', true );
        $_stock= get_post_meta( $product_id, '_stock', true );
-    
+
        if($_in_transit=='')
         $_in_transit=0;
 
@@ -390,9 +390,22 @@ function tisurfaces_content_after_addtocart_button_func() {
             Products in transit to India: <strong>'.$_in_transit.'</strong><br>
             You can pre-order the products and we will deliver it in <strong>3-4 weeks</strong>. </p>';
        }
-        
+
     }
 }
 add_action( 'woocommerce_after_add_to_cart_button', 'tisurfaces_content_after_addtocart_button_func' );
+
+add_filter( 'woocommerce_product_tabs', 'woo_remove_product_tabs', 98 );
+function woo_remove_product_tabs( $tabs ) {
+    unset( $tabs['description'] );        // Remove the description tab
+    return $tabs;
+}
+
+// add_filter( 'woocommerce_product_tabs', 'woo_reorder_tabs', 98 );
+// function woo_reorder_tabs( $tabs ) {
+//   $tabs['description']['priority'] = 15;
+//   $tabs['additional_information']['priority'] = 10;
+//   return $tabs;
+// }
 
 // custom code finish
