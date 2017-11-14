@@ -3383,9 +3383,9 @@ html[dir=rtl] .select2-container-multi .select2-search-choice-close {
 }
 .woocommerce .woocommerce-images .woocommerce-main-image, .woocommerce .woocommerce-images > img{ display: none !important; }
 #price_calculator{ width: 100%; margin: 0 0 15px; border-bottom: 1px solid #ccc; }
-#price_calculator label, .single_variation_wrap, .woocommerce div.product form.cart .variations select{ color: #000; }
+#price_calculator label, .single_variation_wrap, .woocommerce div.product form.cart .variations select{ color: #303133; }
 #price_calculator td{ padding:10px 0; display: inline-block; }
-#price_calculator .length-input, #price_calculator .width-input{ width: 49.6%; display: inline-block; vertical-align: top; }
+// #price_calculator .length-input, #price_calculator .width-input{ width: 49.6%; display: inline-block; vertical-align: top; }
 .woocommerce .quantity .quantity-inner,
 .woocommerce .quantity .total-price-wrap,
 #price_calculator .length-input td,
@@ -3393,9 +3393,9 @@ html[dir=rtl] .select2-container-multi .select2-search-choice-close {
 .woocommerce .quantity .quantity-inner{ padding-right: 10px;}
 .woocommerce .quantity .total-price-wrap{ padding-left: 10px;}
 .woocommerce .quantity{ margin:0 0px 15px; }
-#price_calculator .length-input td, #price_calculator .width-input td{ display: block; width: 100%; padding: 0;}
-#price_calculator .length-input td{ padding-right: 10px; }
-#price_calculator .width-input td{ padding-left: 10px;}
+// #price_calculator .length-input td, #price_calculator .width-input td{ display: block; width: 100%; padding: 0;}
+// #price_calculator .length-input td{ padding-right: 10px; }
+// #price_calculator .width-input td{ padding-left: 10px;}
 #price_calculator .length-input td input, #price_calculator .width-input input{ width: 100%; text-align: left; float: none; margin-top: 0px; font-weight: 600;}
 #price_calculator .calculated-price{ display: none; }
 .woocommerce .quantity label{ font-weight: 600; display: block; margin-bottom: 0;}
