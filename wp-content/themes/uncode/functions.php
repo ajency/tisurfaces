@@ -395,18 +395,18 @@ function tisurfaces_content_after_addtocart_button_func() {
 }
 add_action( 'woocommerce_after_add_to_cart_button', 'tisurfaces_content_after_addtocart_button_func' );
 
-add_filter( 'woocommerce_product_tabs', 'woo_remove_product_tabs', 98 );
-function woo_remove_product_tabs( $tabs ) {
-    unset( $tabs['description'] );        // Remove the description tab
-    return $tabs;
-}
-
-// add_filter( 'woocommerce_product_tabs', 'woo_reorder_tabs', 98 );
-// function woo_reorder_tabs( $tabs ) {
-//   $tabs['description']['priority'] = 15;
-//   $tabs['additional_information']['priority'] = 10;
-//   return $tabs;
+// add_filter( 'woocommerce_product_tabs', 'woo_remove_product_tabs', 98 );
+// function woo_remove_product_tabs( $tabs ) {
+//     unset( $tabs['description'] );        // Remove the description tab
+//     return $tabs;
 // }
+
+add_filter( 'woocommerce_product_tabs', 'woo_reorder_tabs', 98 );
+function woo_reorder_tabs( $tabs ) {
+  $tabs['description']['priority'] = 15;
+  $tabs['additional_information']['priority'] = 10;
+  return $tabs;
+}
 
 
 // Edit WooCommerce dropdown menu item of shop page//
