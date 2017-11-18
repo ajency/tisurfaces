@@ -421,4 +421,196 @@ function my_woocommerce_catalog_orderby( $orderby ) {
 }
 add_filter( "woocommerce_catalog_orderby", "my_woocommerce_catalog_orderby", 20 );
 
+
+
+remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
+
+
+function wps_remove_role() {
+    remove_role( 'editor' );
+    remove_role( 'author' );
+    remove_role( 'contributor' );
+    remove_role( 'subscriber' );
+}
+add_action( 'init', 'wps_remove_role' );
+
+
+// custom admin login logo
+function custom_login_logo()
+{
+   echo '<style type="text/css">
+   h1 a { background-image: url(/wp-content/uploads/2017/06/Slice-2.png) !important;   width: 100% !important; background-size: auto !important;}
+   </style>';
+}
+add_action('login_head', 'custom_login_logo');
+
+
+/**
+ * { item_description -display volume discount price backend field}
+ */
+add_action( 'woocommerce_product_options_general_product_data', 'woo_add_custom_general_fields' );
+
+function woo_add_custom_general_fields() {
+
+  global $woocommerce, $post;
+  
+  echo '<div class="options_group">';
+  
+ woocommerce_wp_text_input( 
+    array( 
+        'id'          => '_volume_discount_price', 
+        'label'       => __( 'Volume Discount Price (&#x20b9;)', 'woocommerce' ), 
+        'placeholder' => '',
+        'desc_tip'    => 'true',
+        'class'    => 'discountvalue',
+        'description' => __( 'Volume Discount in Price will be applicable on a exceeds minimum qty for a single product.', 'woocommerce' ),
+        'type'              => 'number', 
+        'custom_attributes' => array(
+                'step'  => 'any',
+                'min'   => '0'
+            )  
+    )
+);
+ 
+
+
+
+  
+  echo '</div>';
+
+}
+
+/**
+ * { item_description -volume discount price save }
+ */
+add_action( 'woocommerce_process_product_meta', 'woo_add_custom_general_fields_save' );
+
+function woo_add_custom_general_fields_save( $post_id ){
+    
+  
+    $woocommerce_text_field = isset($_POST['_volume_discount_price']) ? $_POST['_volume_discount_price'] : 0 ;
+    update_post_meta( $post_id, '_volume_discount_price', esc_attr( $woocommerce_text_field ) );
+          
+}
+
+/**
+ * { function_description -product line item sub total }
+ *
+ * @param      <type>  $product_subtotal  The product subtotal
+ * @param      <type>  $product           The product
+ * @param      <type>  $quantity          The quantity
+ * @param      <type>  $instance          The instance
+ *
+ * @return     string  ( description_of_the_return_value )
+ */
+function ti_woocommerce_cart_product_subtotal( $product_subtotal, $product, $quantity, $instance ) { 
+    global $woocommerce;
+     
+    $final_total=0;
+    foreach ($instance->cart_contents as  $cart_item_key => $cart_value) {
+      $line_total=$cart_value['line_total'];
+      $product_id=$cart_value['product_id'];
+    }
+    
+    $discount= ti_discountCalculation($product_id, $quantity,$line_total);
+    $new_product_subtotal=$line_total-$discount;
+    if($line_total==$new_product_subtotal)
+      return wc_price($line_total);
+    else
+      return '<strike>'.wc_price($line_total).'</strike> <u>'.wc_price($new_product_subtotal).'</u>';
+}; 
+
+add_filter( 'woocommerce_cart_product_subtotal', 'ti_woocommerce_cart_product_subtotal', 10, 4 ); 
+
+/**
+ * { function_description -additional volume discount display}
+ *
+ * @param      <type>  $cart_object  The cartesian object
+ */
+function sale_custom_price($cart_object) {
+    global $woocommerce;
+    $final_total=0;
+    foreach ($cart_object->cart_contents as  $cart_item_key => $cart_value) {  
+      $product_id=$cart_value['product_id'];
+      $quantity=$cart_value['quantity'];
+      $line_total=$cart_value['line_total'];
+      $final_total=$final_total+ti_discountCalculation($product_id,$quantity,$line_total);       
+    }
+
+    $discount=$final_total;
+
+    if($discount!=0)
+        $cart_object->add_fee('Special Discount', -$discount, true, '');
+    
+}
+add_action( 'woocommerce_cart_calculate_fees', 'sale_custom_price');
+
+/**
+ * { function_description -function to get only the volume discount }
+ *
+ * @param      <type>   $product_id  The product identifier
+ * @param      integer  $quantity    The quantity
+ * @param      <type>   $line_total  The line total
+ *
+ * @return     integer  ( description_of_the_return_value )
+ */
+function ti_discountCalculation($product_id, $quantity,$line_total){
+    global $woocommerce;
+
+    $new_product_subtotal='';
+    if($quantity >= 21){
+        $discount_price=get_post_meta($product_id,  '_volume_discount_price', true );
+        return $new_product_subtotal=$discount_price*$quantity;      
+    } 
+    return 0;
+}
+
+/**
+ * { function_description -calculate the discount with the product subtotal}
+ *
+ * @param      <type>   $product_id  The product identifier
+ * @param      integer  $quantity    The quantity
+ * @param      integer  $line_total  The line total
+ *
+ * @return     integer  ( description_of_the_return_value )
+ */
+function ti_discountCalculation_subtotal($product_id, $quantity,$line_total){
+    global $woocommerce;
+
+    $new_product_subtotal='';
+    if($quantity >= 21){
+        $discount_price=get_post_meta($product_id,  '_volume_discount_price', true );
+        return $new_product_subtotal=$line_total-($discount_price*$quantity);      
+    } 
+    return $line_total;
+}
+
+
+/**
+ * filter to add a discount on the subtotal of the cart n checkout
+ *
+ * @param      <type>  $cart_subtotal  The cartesian subtotal
+ * @param      <type>  $compound       The compound
+ * @param      <type>  $instance       The instance
+ *
+ * @return     <type>  ( description_of_the_return_value )
+ */
+function ti_filter_woocommerce_cart_subtotal( $cart_subtotal, $compound, $instance ) { 
+  
+    global $woocommerce;
+    $final_total=0;
+    foreach ($instance->cart_contents as  $cart_item_key => $cart_value) {
+       $product_id=$cart_value['product_id'];
+       $quantity=$cart_value['quantity'];
+       $line_total=$cart_value['line_total'];
+       $final_total=$final_total+ti_discountCalculation_subtotal($product_id,$quantity,$line_total);
+    }
+    
+    return wc_price($final_total); 
+}; 
+         
+add_filter( 'woocommerce_cart_subtotal', 'ti_filter_woocommerce_cart_subtotal', 10, 3 ); 
+
+
+
 // custom code finish
