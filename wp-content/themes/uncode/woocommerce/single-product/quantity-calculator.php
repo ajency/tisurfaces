@@ -40,7 +40,7 @@ $actual_amount_text = apply_filters(
 	'wc_measurement_price_calculator_actual_amount_text',
 	$product_measurement->get_unit_label() ?
 		/* translators: Placeholders: %1$s - measurement label, %2$s - measurement unit label */
-		sprintf( __( 'Actual %1$s (%2$s)', 'woocommerce-measurement-price-calculator' ), __( $product_measurement->get_label(), 'woocommerce-measurement-price-calculator' ), __( $product_measurement->get_unit_label(), 'woocommerce-measurement-price-calculator' ) ) :
+		sprintf( __( 'Total area of required units  (%2$s): ', 'woocommerce-measurement-price-calculator' ), __( $product_measurement->get_label(), 'woocommerce-measurement-price-calculator' ), __( $product_measurement->get_unit_label(), 'woocommerce-measurement-price-calculator' ) ) :
 		/* translators: Placeholders: %s - measurement label */
 		sprintf( __( 'Actual %s', 'woocommerce-measurement-price-calculator' ), __( $product_measurement->get_label(), 'woocommerce-measurement-price-calculator' ) )
 );
@@ -72,10 +72,9 @@ $actual_amount_text = apply_filters(
 
 	<?php endforeach; ?>
 
-	<tr class="price-table-row total-amount">
+	<tr class="price-table-row total-amount text-color-wvjs-color">
 		<td>
 			<?php echo $actual_amount_text; ?>
-			Total area of units required
 		</td>
 		<td>
 			<span id="<?php echo esc_attr( $product_measurement->get_name() ); ?>_actual" class="amount_actual" data-unit="<?php echo esc_attr( $product_measurement->get_unit() ); ?>"><?php echo $product_measurement->get_value(); ?></span>

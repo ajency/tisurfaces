@@ -87,7 +87,7 @@
 			$('.woocommerce-images .thumbnails').addClass('column-2').removeClass('column-3');
 		}
 		$('div.quantity').wrapInner('<div class="quantity-inner" />');
-		$('div.quantity .quantity-inner').prepend('<label>Units</label>');
+		$('div.quantity .quantity-inner').prepend('<label>Required Units</label>');
 		$('div.quantity').append('<div class="total-price-wrap" />');
 
 		$('body').bind("added_to_cart", get_cart);
