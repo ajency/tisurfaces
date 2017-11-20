@@ -62,6 +62,15 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 			</p>
 		</div>
 
+		<div class="variation_meta">
+			<p>
+				<span class="sku_wrapper detail-container">
+					<span class="detail-label">Dimensions</span>
+					<span class="dimensions-wrap"></span>
+				</span>
+			</p>
+		</div>
+
 		<?php do_action( 'woocommerce_before_add_to_cart_button' ); ?>
 
 		<div class="single_variation_wrap">
