@@ -511,10 +511,10 @@ function ti_woocommerce_cart_product_subtotal( $product_subtotal, $product, $qua
 
      global $woocommerce;
  
-   // echo '<br>'. $product_id=$product->parent_id;
+    $product_id=$product->parent_id;
     $variation_id=$product->get_id();
+
     foreach ($instance->cart_contents as  $cart_item_key => $cart_value) { 
-      $product_id=$cart_value['product_id'];
       if( $variation_id == $cart_value['variation_id']){
         $line_total=$cart_value['line_total'];       
       }
