@@ -765,8 +765,8 @@ function get_volume_discount_for_dealer($product_id){
     return array('value' => 0,'type'=>'');
 }
 
-add_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs', 10 );
-function woocommerce_output_product_data_tabs(){
+add_action( 'woocommerce_before_single_product_summary', 'ti_output_product_data_tabs', 10 );
+function ti_output_product_data_tabs(){
   global $post;
   
   $user_id        = get_current_user_id();
@@ -775,10 +775,8 @@ function woocommerce_output_product_data_tabs(){
   if($role_name=='Dealer'){   
 
     wp_register_script( 'accounting', plugin_dir_path('/woocommerce/assets/js/accounting/accounting.min.js') );
-     wp_enqueue_script( 'accounting' );
+    wp_enqueue_script( 'accounting' );
     wp_register_script( 'measure_calc_custom', get_template_directory_uri() . '/library/js/measure-calc-custom.js' );
-
-
     wp_enqueue_script( 'measure_calc_custom' );
 
     $dealer_volume_discount=get_volume_discount_for_dealer($post->ID);
