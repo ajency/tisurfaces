@@ -23,6 +23,10 @@ jQuery(document).ready(function($) {
          }, 50);
     });; 
 
+    $(document).live('keyup', 'input[name=quantity]', function() {
+     single_product_price_change();
+    });
+
     function single_product_price_change() {
         var quantity = $("input[name=quantity]").val();
         if (dealer_volume_discount.type == 'percentage_discount') {
