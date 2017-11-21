@@ -109,6 +109,7 @@ if (is_admin_bar_showing()) $html_class .= ' admin-mode';
 	}
 
 	?>
+
 	<div class="box-wrapper<?php echo esc_html($back_class); ?>"<?php echo wp_kses_post($background_style); ?>>
 		<div class="box-container<?php echo esc_attr($boxed_width); ?>">
 		<script type="text/javascript">UNCODE.initBox();</script>
@@ -127,3 +128,12 @@ if (is_admin_bar_showing()) $html_class .= ' admin-mode';
 				<div class="main-container">
 					<div class="page-wrapper<?php if ($onepage) echo ' main-onepage'; ?>">
 						<div class="sections-container">
+
+							<?php
+								$user = wp_get_current_user();
+								if ( in_array( 'dealer', (array) $user->roles ) ) {
+							?>
+								<div class="dealer-message">You are logged in with a dealer account. All products are displaying reduced dealer price</div>
+							<?php
+								}
+							?>

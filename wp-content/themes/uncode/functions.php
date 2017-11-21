@@ -230,7 +230,7 @@ function tisurface_woocommerce_cart_item_quantity($product_quantity, $cart_item_
     $role_name = tisf_get_user_role($user_id);
     $role_arr=array('customer','subscriber','Dealer');
     $_volume_min_value=get_min_volume_product_variation($cart_item['product_id'],$cart_item['variation_id']);
-    
+
     if (in_array($role_name,$role_arr)){
         if($_volume_min_value>0){
           if ($cart_item['quantity'] < $_volume_min_value) {
@@ -308,6 +308,16 @@ function add_login_logout_link($items, $args) {
         $items .= '<li class="login-out">'. $loginoutlink .'</li>';
     return $items;
 }
+
+/* Login redirect to my-account page */
+// add_action('init','possibly_redirect');
+// function possibly_redirect(){
+//  global $pagenow;
+//  if ($pagenow == 'wp-login.php' && !is_user_logged_in()) {
+//   wp_redirect(home_url('/my-account/'));
+//   exit();
+//  }
+// }
 
 /* checkout page: place order to submit request */
 add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text' );
@@ -457,29 +467,29 @@ add_action('login_head', 'custom_login_logo');
 function woo_add_custom_general_fields() {
 
   global $woocommerce, $post;
-  
+
   echo '<div class="options_group">';
-  
- woocommerce_wp_text_input( 
-    array( 
-        'id'          => '_volume_discount_price', 
-        'label'       => __( 'Volume Discount Price (&#x20b9;)', 'woocommerce' ), 
+
+ woocommerce_wp_text_input(
+    array(
+        'id'          => '_volume_discount_price',
+        'label'       => __( 'Volume Discount Price (&#x20b9;)', 'woocommerce' ),
         'placeholder' => '',
         'desc_tip'    => 'true',
         'class'    => 'discountvalue',
         'description' => __( 'Volume Discount in Price will be applicable on a exceeds minimum qty for a single product.', 'woocommerce' ),
-        'type'              => 'number', 
+        'type'              => 'number',
         'custom_attributes' => array(
                 'step'  => 'any',
                 'min'   => '0'
-            )  
+            )
     )
 );
- 
 
 
 
-  
+
+
   echo '</div>';
 
 }
@@ -490,11 +500,11 @@ function woo_add_custom_general_fields() {
 // add_action( 'woocommerce_process_product_meta', 'woo_add_custom_general_fields_save' );
 
 function woo_add_custom_general_fields_save( $post_id ){
-    
-  
+
+
     $woocommerce_text_field = isset($_POST['_volume_discount_price']) ? $_POST['_volume_discount_price'] : 0 ;
     update_post_meta( $post_id, '_volume_discount_price', esc_attr( $woocommerce_text_field ) );
-          
+
 }
 
 /**
@@ -507,6 +517,7 @@ function woo_add_custom_general_fields_save( $post_id ){
  *
  * @return     string  ( description_of_the_return_value )
  */
+
 function ti_woocommerce_cart_product_subtotal( $product_subtotal, $product, $quantity, $instance ) { 
     
     $user_id        = get_current_user_id();
@@ -532,12 +543,11 @@ function ti_woocommerce_cart_product_subtotal( $product_subtotal, $product, $qua
         return '<strike>'.wc_price($line_total).'</strike> <u>'.wc_price($new_product_subtotal).'</u>';
     }
 
+
     return $product_subtotal; 
 }; 
 
-add_filter( 'woocommerce_cart_product_subtotal', 'ti_woocommerce_cart_product_subtotal', 10, 4 ); 
-
-
+add_filter( 'woocommerce_cart_product_subtotal', 'ti_woocommerce_cart_product_subtotal', 10, 4 );
 
 
 /**
@@ -546,6 +556,7 @@ add_filter( 'woocommerce_cart_product_subtotal', 'ti_woocommerce_cart_product_su
  * @param      <type>  $cart_object  The cartesian object
  */
 function sale_custom_price($cart_object) {
+
     $user_id        = get_current_user_id();
     $role_name = tisf_get_user_role($user_id);
     
@@ -579,9 +590,9 @@ add_action( 'woocommerce_cart_calculate_fees', 'sale_custom_price');
  * @return     integer  ( description_of_the_return_value )
  */
 function ti_discountCalculation($product_id, $quantity,$variation_id){
-      
+
     $discount_price=get_volume_discount_product_variation($product_id, $quantity,$variation_id);
-    return $total_discount=$discount_price*$quantity;   
+    return $total_discount=$discount_price*$quantity;
 }
 
 /**
@@ -601,7 +612,7 @@ function get_volume_discount_product_variation($product_id, $quantity,$variation
        if($roles_value['args']['applies_to']=='everyone'){
 
          if(in_array($variation_id,$rules['variation_rules']['args']['variations'])){
-            
+
             foreach ($rules['rules'] as $r_value) {
               if($quantity >= $r_value['from']){
                 return $r_value['amount'];
@@ -624,9 +635,9 @@ function get_min_volume_product_variation($product_id,$variation_id){
        if($roles_value['args']['applies_to']=='everyone'){
 
          if(in_array($variation_id,$rules['variation_rules']['args']['variations'])){
-            
+
             foreach ($rules['rules'] as $r_value) {
-              return $r_value['from'];              
+              return $r_value['from'];
             }
           }
        }
@@ -645,10 +656,10 @@ function get_min_volume_product_variation($product_id,$variation_id){
  * @return     integer  ( description_of_the_return_value )
  */
 function ti_discountCalculation_subtotal($product_id, $quantity,$line_total,$variation_id){
- 
+
     $discount_price=get_volume_discount_product_variation($product_id, $quantity,$variation_id);
 
-    return $line_total-($discount_price*$quantity); 
+    return $line_total-($discount_price*$quantity);
 }
 
 
@@ -661,11 +672,13 @@ function ti_discountCalculation_subtotal($product_id, $quantity,$line_total,$var
  *
  * @return     <type>  ( description_of_the_return_value )
  */
+
 function ti_filter_woocommerce_cart_subtotal( $cart_subtotal, $compound, $instance ) { 
    $user_id        = get_current_user_id();
     $role_name = tisf_get_user_role($user_id);
     
     if($role_name=='Dealer'){
+
     global $woocommerce;
     $final_total=0;
     foreach ($instance->cart_contents as  $cart_item_key => $cart_value) {
@@ -675,6 +688,7 @@ function ti_filter_woocommerce_cart_subtotal( $cart_subtotal, $compound, $instan
        $variation_id=$cart_value['variation_id'];
        $final_total=$final_total+ti_discountCalculation_subtotal($product_id,$quantity,$line_total,$variation_id);
     }
+
     
     return wc_price($final_total); 
   }
