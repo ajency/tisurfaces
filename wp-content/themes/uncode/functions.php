@@ -517,30 +517,37 @@ function woo_add_custom_general_fields_save( $post_id ){
  *
  * @return     string  ( description_of_the_return_value )
  */
-function ti_woocommerce_cart_product_subtotal( $product_subtotal, $product, $quantity, $instance ) {
 
-     global $woocommerce;
-
-    $product_id=$product->parent_id;
-    $variation_id=$product->get_id();
-
-    foreach ($instance->cart_contents as  $cart_item_key => $cart_value) {
-      if( $variation_id == $cart_value['variation_id']){
-        $line_total=$cart_value['line_total'];
+function ti_woocommerce_cart_product_subtotal( $product_subtotal, $product, $quantity, $instance ) { 
+    
+    $user_id        = get_current_user_id();
+    $role_name = tisf_get_user_role($user_id);
+    
+    if($role_name=='Dealer'){
+      global $woocommerce;
+      
+      $product_id=$product->parent_id;
+      $variation_id=$product->get_id();
+      foreach ($instance->cart_contents as  $cart_item_key => $cart_value) { 
+        if( $variation_id == $cart_value['variation_id']){
+          $line_total=$cart_value['line_total'];       
+        }
       }
+
+      $discount= ti_discountCalculation($product_id, $quantity,$variation_id);
+      $new_product_subtotal=$line_total-$discount;
+    
+      if($line_total==$new_product_subtotal)
+        return wc_price($line_total);
+      else
+        return '<strike>'.wc_price($line_total).'</strike> <u>'.wc_price($new_product_subtotal).'</u>';
     }
 
-    $discount= ti_discountCalculation($product_id, $quantity,$variation_id);
-    $new_product_subtotal=$line_total-$discount;
 
-    if($line_total==$new_product_subtotal)
-      return wc_price($line_total);
-    else
-      return '<strike>'.wc_price($line_total).'</strike> <u>'.wc_price($new_product_subtotal).'</u>';
-};
+    return $product_subtotal; 
+}; 
 
 add_filter( 'woocommerce_cart_product_subtotal', 'ti_woocommerce_cart_product_subtotal', 10, 4 );
-
 
 
 /**
@@ -549,21 +556,27 @@ add_filter( 'woocommerce_cart_product_subtotal', 'ti_woocommerce_cart_product_su
  * @param      <type>  $cart_object  The cartesian object
  */
 function sale_custom_price($cart_object) {
-    global $woocommerce;
-    $final_total=0;
-    foreach ($cart_object->cart_contents as  $cart_item_key => $cart_value) {
-      $product_id=$cart_value['product_id'];
-      $quantity=$cart_value['quantity'];
-      $line_total=$cart_value['line_total'];
-      $variation_id=$cart_value['variation_id'];
-      $final_total=$final_total+ti_discountCalculation($product_id,$quantity,$variation_id);
+
+    $user_id        = get_current_user_id();
+    $role_name = tisf_get_user_role($user_id);
+    
+    if($role_name=='Dealer'){
+      global $woocommerce;
+      $final_total=0;
+      foreach ($cart_object->cart_contents as  $cart_item_key => $cart_value) {  
+        $product_id=$cart_value['product_id'];
+        $quantity=$cart_value['quantity'];
+        $line_total=$cart_value['line_total'];
+        $variation_id=$cart_value['variation_id'];
+        $final_total=$final_total+ti_discountCalculation($product_id,$quantity,$variation_id);       
+      }
+
+      $discount=$final_total;
+
+      if($discount!=0)
+          $cart_object->add_fee('Special Discount', -$discount, true, '');
     }
-
-    $discount=$final_total;
-
-    if($discount!=0)
-        $cart_object->add_fee('Special Discount', -$discount, true, '');
-
+    
 }
 add_action( 'woocommerce_cart_calculate_fees', 'sale_custom_price');
 
@@ -659,7 +672,12 @@ function ti_discountCalculation_subtotal($product_id, $quantity,$line_total,$var
  *
  * @return     <type>  ( description_of_the_return_value )
  */
-function ti_filter_woocommerce_cart_subtotal( $cart_subtotal, $compound, $instance ) {
+
+function ti_filter_woocommerce_cart_subtotal( $cart_subtotal, $compound, $instance ) { 
+   $user_id        = get_current_user_id();
+    $role_name = tisf_get_user_role($user_id);
+    
+    if($role_name=='Dealer'){
 
     global $woocommerce;
     $final_total=0;
@@ -671,10 +689,14 @@ function ti_filter_woocommerce_cart_subtotal( $cart_subtotal, $compound, $instan
        $final_total=$final_total+ti_discountCalculation_subtotal($product_id,$quantity,$line_total,$variation_id);
     }
 
-    return wc_price($final_total);
-};
+    
+    return wc_price($final_total); 
+  }
+  return $cart_subtotal;
+}; 
+         
+add_filter( 'woocommerce_cart_subtotal', 'ti_filter_woocommerce_cart_subtotal', 10, 3 ); 
 
-add_filter( 'woocommerce_cart_subtotal', 'ti_filter_woocommerce_cart_subtotal', 10, 3 );
 
 /**
  * { item_description - add to show all dealers submenu in users menu in dashboard}
@@ -717,4 +739,58 @@ function wc_custom_user_redirect( $redirect, $user ) {
   return $redirect;
 }
 add_filter( 'woocommerce_login_redirect', 'wc_custom_user_redirect', 10, 2 );
+
+
+/**
+ * Gets the volume discount for dealer.
+ *
+ * @param      <type>   $product_id  The product identifier
+ *
+ * @return     integer  The volume discount for dealer.
+ */
+function get_volume_discount_for_dealer($product_id){
+   $_pricing_rules=get_post_meta($product_id,  '_pricing_rules', true );
+   // echo "<pre>";
+   foreach ($_pricing_rules as  $rules) {
+     foreach ($rules['conditions'] as $roles_value) {
+        if(isset($roles_value['args']['roles'])){
+          if($roles_value['args']['applies_to']=='roles' && in_array('Dealer' ,$roles_value['args']['roles'])){  
+            foreach ($rules['rules'] as $r_value) {
+                return array('value' => $r_value['amount'],'type'=>$r_value['type']);
+            }          
+          }
+        }
+      }
+    }
+    return array('value' => 0,'type'=>'');
+}
+
+add_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs', 10 );
+function woocommerce_output_product_data_tabs(){
+  global $post;
+  
+  $user_id        = get_current_user_id();
+  $role_name = tisf_get_user_role($user_id);
+
+  if($role_name=='Dealer'){   
+
+    wp_register_script( 'accounting', plugin_dir_path('/woocommerce/assets/js/accounting/accounting.min.js') );
+     wp_enqueue_script( 'accounting' );
+    wp_register_script( 'measure_calc_custom', get_template_directory_uri() . '/library/js/measure-calc-custom.js' );
+
+
+    wp_enqueue_script( 'measure_calc_custom' );
+
+    $dealer_volume_discount=get_volume_discount_for_dealer($post->ID);
+    //print_r($dealer_volume_discount);
+    wp_localize_script( 'measure_calc_custom', 'dealer_volume_discount',
+          array( 
+              'value' => $dealer_volume_discount['value'],
+              'type' => $dealer_volume_discount['type'],
+          )
+      );
+  }
+
+}
+
 // custom code finish
