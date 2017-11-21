@@ -66,7 +66,9 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 			<p>
 				<span class="sku_wrapper detail-container">
 					<span class="detail-label">Dimensions</span>
-					<span class="dimensions-wrap"></span>
+					<span class="product_dimensions" itemprop="product_dimensions">
+						<?php echo ( $width = $product->get_width() ) ? $width : esc_html__( 'N/A', 'woocommerce' ); ?> x <?php echo ( $height = $product->get_height() ) ? $height : esc_html__( 'N/A', 'woocommerce' ); ?> ft
+					</span>
 				</span>
 			</p>
 		</div>
