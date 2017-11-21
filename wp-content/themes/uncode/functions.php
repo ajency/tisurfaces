@@ -607,18 +607,20 @@ function ti_discountCalculation($product_id, $quantity,$variation_id){
 function get_volume_discount_product_variation($product_id, $quantity,$variation_id){
    $_pricing_rules=get_post_meta($product_id,  '_pricing_rules', true );
    // echo "<pre>";
-   foreach ($_pricing_rules as  $rules) {
-     foreach ($rules['conditions'] as $roles_value) {
-       if($roles_value['args']['applies_to']=='everyone'){
+  if(is_array($_pricing_rules)){
+    foreach ($_pricing_rules as  $rules) {
+       foreach ($rules['conditions'] as $roles_value) {
+         if($roles_value['args']['applies_to']=='everyone'){
 
-         if(in_array($variation_id,$rules['variation_rules']['args']['variations'])){
+           if(in_array($variation_id,$rules['variation_rules']['args']['variations'])){
 
-            foreach ($rules['rules'] as $r_value) {
-              if($quantity >= $r_value['from']){
-                return $r_value['amount'];
+              foreach ($rules['rules'] as $r_value) {
+                if($quantity >= $r_value['from']){
+                  return $r_value['amount'];
+                }
               }
             }
-          }
+         }
        }
      }
    }
@@ -630,16 +632,18 @@ function get_volume_discount_product_variation($product_id, $quantity,$variation
 function get_min_volume_product_variation($product_id,$variation_id){
    $_pricing_rules=get_post_meta($product_id,  '_pricing_rules', true );
    // echo "<pre>";
-   foreach ($_pricing_rules as  $rules) {
-     foreach ($rules['conditions'] as $roles_value) {
-       if($roles_value['args']['applies_to']=='everyone'){
+    if(is_array($_pricing_rules)){ 
+     foreach ($_pricing_rules as  $rules) {
+       foreach ($rules['conditions'] as $roles_value) {
+         if($roles_value['args']['applies_to']=='everyone'){
 
-         if(in_array($variation_id,$rules['variation_rules']['args']['variations'])){
+           if(in_array($variation_id,$rules['variation_rules']['args']['variations'])){
 
-            foreach ($rules['rules'] as $r_value) {
-              return $r_value['from'];
+              foreach ($rules['rules'] as $r_value) {
+                return $r_value['from'];
+              }
             }
-          }
+         }
        }
      }
    }
@@ -751,22 +755,24 @@ add_filter( 'woocommerce_login_redirect', 'wc_custom_user_redirect', 10, 2 );
 function get_volume_discount_for_dealer($product_id){
    $_pricing_rules=get_post_meta($product_id,  '_pricing_rules', true );
    // echo "<pre>";
-   foreach ($_pricing_rules as  $rules) {
-     foreach ($rules['conditions'] as $roles_value) {
-        if(isset($roles_value['args']['roles'])){
-          if($roles_value['args']['applies_to']=='roles' && in_array('Dealer' ,$roles_value['args']['roles'])){  
-            foreach ($rules['rules'] as $r_value) {
-                return array('value' => $r_value['amount'],'type'=>$r_value['type']);
-            }          
+   if(is_array($_pricing_rules)){
+     foreach ($_pricing_rules as  $rules) {
+       foreach ($rules['conditions'] as $roles_value) {
+          if(isset($roles_value['args']['roles'])){
+            if($roles_value['args']['applies_to']=='roles' && in_array('Dealer' ,$roles_value['args']['roles'])){  
+              foreach ($rules['rules'] as $r_value) {
+                  return array('value' => $r_value['amount'],'type'=>$r_value['type']);
+              }          
+            }
           }
         }
       }
-    }
+   }
     return array('value' => 0,'type'=>'');
 }
 
-add_action( 'woocommerce_before_single_product_summary', 'ti_output_product_data_tabs', 10 );
-function ti_output_product_data_tabs(){
+add_action( 'woocommerce_before_single_product_summary', 'ti_single_product_dealer_discount_calc', 10 );
+function ti_single_product_dealer_discount_calc(){
   global $post;
   
   $user_id        = get_current_user_id();
@@ -790,5 +796,38 @@ function ti_output_product_data_tabs(){
   }
 
 }
+// define the woocommerce_get_price_html callback 
+function ti_woocommerce_get_price_html( $price, $instance ) { 
+    global $post,$product,$woocommerce;
+
+  $user_id        = get_current_user_id();
+  $role_name = tisf_get_user_role($user_id);
+
+  if($role_name=='Dealer'){   
+    $price='';
+    $price_data =get_post_meta($post->ID,'_price',false);
+    
+    $discount_data=get_volume_discount_for_dealer($post->ID);
+    
+    if($discount_data['type']=='price_discount'){
+      $min=current($price_data)-$discount_data['value'];
+      $max=end($price_data)-$discount_data['value'];
+    }
+    else if($discount_data['type']=='percentage_discount'){
+       $min=(current($price_data)-(($discount_data['value']/100)*current($price_data)));
+       $max=(end($price_data)-(($discount_data['value']/100)*end($price_data)));
+    }
+    else{
+      $min=current($price_data);
+      $max=end($price_data);
+    }
+
+    $price.='<span class="woocommerce-Price-currencySymbol">'.woocommerce_price($min).' – </span> <span class="woocommerce-Price-currencySymbol">'.woocommerce_price($max).'</span>';
+  
+  }
+  return $price; 
+};          
+add_filter( 'woocommerce_get_price_html', 'ti_woocommerce_get_price_html', 10, 2 ); 
+
 
 // custom code finish
