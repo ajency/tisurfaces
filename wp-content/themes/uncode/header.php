@@ -131,9 +131,9 @@ if (is_admin_bar_showing()) $html_class .= ' admin-mode';
 
 							<?php
 								$user = wp_get_current_user();
-								if ( in_array( 'dealer', (array) $user->roles ) ) {
+								if ( in_array( 'Dealer', (array) $user->roles ) ) {
 							?>
-								<div class="dealer-message">You are logged in with a dealer account. All products are displaying reduced dealer price</div>
+								<div class="dealer-message">You are logged in with a dealer account. All products are displaying reduced dealer price.</div>
 							<?php
 								}
 							?>
