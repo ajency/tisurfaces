@@ -753,7 +753,6 @@ function get_volume_discount_for_dealer($product_id){
    // echo "<pre>";
    foreach ($_pricing_rules as  $rules) {
      foreach ($rules['conditions'] as $roles_value) {
-      echo $roles_value['args']['roles'];
         if(isset($roles_value['args']['roles'])){
           if($roles_value['args']['applies_to']=='roles' && in_array('Dealer' ,$roles_value['args']['roles'])){  
             foreach ($rules['rules'] as $r_value) {

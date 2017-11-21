@@ -15,7 +15,13 @@ jQuery(document).ready(function($) {
 
      }, 50);
         
-    });;
+    });
+
+    $(".swatch-color").click(function(event) {
+      setTimeout(function() {
+        single_product_price_change()
+         }, 50);
+    });; 
 
     function single_product_price_change() {
         var quantity = $("input[name=quantity]").val();
