@@ -636,13 +636,14 @@ function get_min_volume_product_variation($product_id,$variation_id){
      foreach ($_pricing_rules as  $rules) {
        foreach ($rules['conditions'] as $roles_value) {
          if($roles_value['args']['applies_to']=='everyone'){
-
+          if(isset($rules['variation_rules']['args']['variations'])){
            if(in_array($variation_id,$rules['variation_rules']['args']['variations'])){
 
               foreach ($rules['rules'] as $r_value) {
                 return $r_value['from'];
               }
             }
+          }
          }
        }
      }
