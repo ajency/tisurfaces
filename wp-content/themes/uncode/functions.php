@@ -831,4 +831,14 @@ function ti_woocommerce_get_price_html( $price, $instance ) {
 add_filter( 'woocommerce_get_price_html', 'ti_woocommerce_get_price_html', 10, 2 ); 
 
 
+/**
+ * Remove password strength check.
+ */
+function ti_remove_password_strength() {
+  if ( wp_script_is( 'wc-password-strength-meter', 'enqueued' ) ) {
+    wp_dequeue_script( 'wc-password-strength-meter' );
+  }
+}
+add_action( 'wp_print_scripts', 'ti_remove_password_strength', 10 );
+
 // custom code finish
