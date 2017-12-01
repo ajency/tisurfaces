@@ -117,6 +117,14 @@ $text_lighter_20 = wc_hex_lighter( $text, 20 );
 	margin: 0 0 16px;
 }
 
+#body_content .billing-td p {
+	margin-bottom: 0;
+}
+
+#body_content .billing-td {
+	padding: 0;
+}
+
 #body_content_inner {
 	color: <?php echo esc_attr( $text_lighter_20 ); ?>;
 	font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;

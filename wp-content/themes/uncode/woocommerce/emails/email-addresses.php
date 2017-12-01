@@ -22,15 +22,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $text_align = is_rtl() ? 'right' : 'left';
 
-?><table id="addresses" cellspacing="0" cellpadding="0" style="width: 100%; vertical-align: top;" border="0">
+?>
+<h3 style="margin: 8px 0 8px;"><?php _e( 'Customer Details', 'woocommerce' ); ?></h3>
+<table id="addresses" cellspacing="0" cellpadding="0" style="width: 100%; vertical-align: top;" border="0">
   <tr>
     <td class="td billing-td" style="background: #f7f7f7;text-align:<?php echo $text_align; ?>; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" valign="top" width="50%">
-      <h3><?php _e( 'Customer Details', 'woocommerce' ); ?></h3>
 
       <table style="width:100%;">
         <tr>
           <td>
-            <p class="text"><?php echo $order->get_formatted_billing_address(); ?></p>
+            <p class="text" style="font-weight: 600;"><?php echo $order->get_formatted_billing_address(); ?></p>
           </td>
           <td>
             <label style="font-weight: 600; font-size: 12px;">Email: </label>
