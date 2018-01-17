@@ -25,8 +25,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<p><?php _e( "We have received your request and we will get back to you with the best quote and payment details. Your order is on-hold until we confirm the quote. Your request details are shown below for your reference:", 'woocommerce' ); ?></p>
-
+<p><?php _e( "We have received your request and we will get back to you with the best quote and payment details. Your order is on-hold until we confirm the quote. Your request details are shown below for your reference", 'woocommerce' ); ?></p>
+<p><?php _e( "Note :
+If you have ordered out of stock products /products that are in transit to India,
+we will contact you when we have them in stock. We do not charge extra for pre-orders !!!", 'woocommerce' ); ?></p>
 <?php
 
 /**
