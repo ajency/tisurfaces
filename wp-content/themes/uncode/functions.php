@@ -841,4 +841,45 @@ function ti_remove_password_strength() {
 }
 add_action( 'wp_print_scripts', 'ti_remove_password_strength', 10 );
 
+
+
+/**
+ * Auto update cart after quantity change
+ *
+ * @return  string
+ **/
+/*add_action( 'woocommerce_after_cart', 'custom_after_cart' );
+function custom_after_cart() {
+    echo '<script>
+    jQuery(document).ready(function($) {  
+      var upd_cart_btn = $(".woocommerce-cart input[name=update_cart]"); 
+      upd_cart_btn.hide(); 
+      $(".cart_item").find(".qty").on("change", function(){ 
+        upd_cart_btn.trigger("click"); 
+      }); 
+    });
+    </script>';
+}
+*/
+
+/**
+ * Auto update cart after quantity change
+ *
+ * @return  string
+ **/
+add_action( 'wp_footer', 'cart_update_qty_script' );
+function cart_update_qty_script() {
+    if (is_cart()) :
+    ?>
+    <script>
+        jQuery('div.woocommerce').on('change', '.qty', function(){
+            jQuery("[name='update_cart']").trigger("click"); 
+        });
+    </script>
+    <?php
+    endif;
+}
+
+
+
 // custom code finish
