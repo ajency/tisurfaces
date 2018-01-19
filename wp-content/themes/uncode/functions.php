@@ -246,7 +246,6 @@ function tisurface_woocommerce_cart_item_quantity($product_quantity, $cart_item_
 return $product_quantity;
 }
 
-
 add_filter( 'woocommerce_cart_item_quantity', 'tisurface_woocommerce_cart_item_quantity', 10, 3 );
 
 
@@ -259,7 +258,7 @@ function tisf_get_user_role( $user = null ) {
 /*Add to cart*/
 add_filter( 'woocommerce_product_single_add_to_cart_text', 'woo_custom_cart_button_text' );
 function woo_custom_cart_button_text() {
-    return __( 'Request Quote', 'woocommerce' );
+    return __( 'Add to Cart', 'woocommerce' );
 }
 
 /*Proceed to Checkout*/
@@ -268,7 +267,7 @@ add_action('woocommerce_proceed_to_checkout', 'sm_woo_custom_checkout_button_tex
 function sm_woo_custom_checkout_button_text() {
     $checkout_url = WC()->cart->get_checkout_url();
   ?>
-       <a href="<?php echo $checkout_url; ?>" class="checkout-button btn btn-default alt wc-forward"><?php  _e( 'Submit Request', 'woocommerce' ); ?></a>
+       <a href="<?php echo $checkout_url; ?>" class="checkout-button btn btn-default alt wc-forward"><?php  _e( 'Proceed to Order', 'woocommerce' ); ?></a>
   <?php
 }
 
@@ -309,34 +308,34 @@ function add_login_logout_link($items, $args) {
     return $items;
 }
 
-/* Login redirect to my-account page */
-// add_action('init','possibly_redirect');
-// function possibly_redirect(){
-//  global $pagenow;
-//  if ($pagenow == 'wp-login.php' && !is_user_logged_in()) {
-//   wp_redirect(home_url('/my-account/'));
-//   exit();
-//  }
-// }
+// Login redirect to my-account page
+/*add_action('init','possibly_redirect');
+function possibly_redirect(){
+ global $pagenow;
+ if ($pagenow == 'wp-login.php' && !is_user_logged_in()) {
+  wp_redirect(home_url('/my-account/'));
+  exit();
+ }
+}*/
 
 /* checkout page: place order to submit request */
 add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text' );
 function woo_custom_order_button_text() {
-    return __( 'submit request', 'woocommerce' );
+    return __( 'Proceed to Order', 'woocommerce' );
 }
 
 function custom_shop_page_redirect(){
 
-         if (is_product_category()) {
+    if (is_product_category()) {
 
             global $wp_query;
 
             $cat = $wp_query->get_queried_object();
             if($cat->slug=='all' ){
-                wp_redirect( home_url('/shop') );
+    			wp_redirect( home_url('/shop') );
                 exit();
-            }
-          }
+    		}
+    }
 }
 add_action( 'template_redirect', 'custom_shop_page_redirect' );
 
@@ -408,19 +407,12 @@ function tisurfaces_content_after_addtocart_button_func() {
 }
 add_action( 'woocommerce_after_add_to_cart_button', 'tisurfaces_content_after_addtocart_button_func' );
 
-// add_filter( 'woocommerce_product_tabs', 'woo_remove_product_tabs', 98 );
-// function woo_remove_product_tabs( $tabs ) {
-//     unset( $tabs['description'] );        // Remove the description tab
-//     return $tabs;
-// }
-
 add_filter( 'woocommerce_product_tabs', 'woo_reorder_tabs', 98 );
 function woo_reorder_tabs( $tabs ) {
   $tabs['description']['priority'] = 15;
   $tabs['additional_information']['priority'] = 10;
   return $tabs;
 }
-
 
 // Edit WooCommerce dropdown menu item of shop page//
 // Options: menu_order, popularity, rating, date, price, price-desc
@@ -433,8 +425,6 @@ function my_woocommerce_catalog_orderby( $orderby ) {
   return $orderby;
 }
 add_filter( "woocommerce_catalog_orderby", "my_woocommerce_catalog_orderby", 20 );
-
-
 
 remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
 
@@ -517,37 +507,37 @@ function woo_add_custom_general_fields_save( $post_id ){
  *
  * @return     string  ( description_of_the_return_value )
  */
+function ti_woocommerce_cart_product_subtotal( $product_subtotal, $product, $quantity, $instance ) {
 
-function ti_woocommerce_cart_product_subtotal( $product_subtotal, $product, $quantity, $instance ) { 
-    
     $user_id        = get_current_user_id();
     $role_name = tisf_get_user_role($user_id);
-    
+
     if($role_name=='Dealer'){
       global $woocommerce;
-      
+
       $product_id=$product->parent_id;
       $variation_id=$product->get_id();
-      foreach ($instance->cart_contents as  $cart_item_key => $cart_value) { 
+      foreach ($instance->cart_contents as  $cart_item_key => $cart_value) {
         if( $variation_id == $cart_value['variation_id']){
-          $line_total=$cart_value['line_total'];       
+          $line_total=$cart_value['line_total'];
         }
       }
 
       $discount= ti_discountCalculation($product_id, $quantity,$variation_id);
       $new_product_subtotal=$line_total-$discount;
-    
+
       if($line_total==$new_product_subtotal)
         return wc_price($line_total);
       else
         return '<strike>'.wc_price($line_total).'</strike> <u>'.wc_price($new_product_subtotal).'</u>';
     }
 
-
-    return $product_subtotal; 
-}; 
+    return $product_subtotal;
+};
 
 add_filter( 'woocommerce_cart_product_subtotal', 'ti_woocommerce_cart_product_subtotal', 10, 4 );
+
+
 
 
 /**
@@ -556,19 +546,18 @@ add_filter( 'woocommerce_cart_product_subtotal', 'ti_woocommerce_cart_product_su
  * @param      <type>  $cart_object  The cartesian object
  */
 function sale_custom_price($cart_object) {
-
     $user_id        = get_current_user_id();
     $role_name = tisf_get_user_role($user_id);
-    
+
     if($role_name=='Dealer'){
       global $woocommerce;
       $final_total=0;
-      foreach ($cart_object->cart_contents as  $cart_item_key => $cart_value) {  
+      foreach ($cart_object->cart_contents as  $cart_item_key => $cart_value) {
         $product_id=$cart_value['product_id'];
         $quantity=$cart_value['quantity'];
         $line_total=$cart_value['line_total'];
         $variation_id=$cart_value['variation_id'];
-        $final_total=$final_total+ti_discountCalculation($product_id,$quantity,$variation_id);       
+        $final_total=$final_total+ti_discountCalculation($product_id,$quantity,$variation_id);
       }
 
       $discount=$final_total;
@@ -576,7 +565,7 @@ function sale_custom_price($cart_object) {
       if($discount!=0)
           $cart_object->add_fee('Special Discount', -$discount, true, '');
     }
-    
+
 }
 add_action( 'woocommerce_cart_calculate_fees', 'sale_custom_price');
 
@@ -632,7 +621,7 @@ function get_volume_discount_product_variation($product_id, $quantity,$variation
 function get_min_volume_product_variation($product_id,$variation_id){
    $_pricing_rules=get_post_meta($product_id,  '_pricing_rules', true );
    // echo "<pre>";
-    if(is_array($_pricing_rules)){ 
+    if(is_array($_pricing_rules)){
      foreach ($_pricing_rules as  $rules) {
        foreach ($rules['conditions'] as $roles_value) {
          if($roles_value['args']['applies_to']=='everyone'){
@@ -678,10 +667,10 @@ function ti_discountCalculation_subtotal($product_id, $quantity,$line_total,$var
  * @return     <type>  ( description_of_the_return_value )
  */
 
-function ti_filter_woocommerce_cart_subtotal( $cart_subtotal, $compound, $instance ) { 
+function ti_filter_woocommerce_cart_subtotal( $cart_subtotal, $compound, $instance ) {
    $user_id        = get_current_user_id();
     $role_name = tisf_get_user_role($user_id);
-    
+
     if($role_name=='Dealer'){
 
     global $woocommerce;
@@ -694,13 +683,13 @@ function ti_filter_woocommerce_cart_subtotal( $cart_subtotal, $compound, $instan
        $final_total=$final_total+ti_discountCalculation_subtotal($product_id,$quantity,$line_total,$variation_id);
     }
 
-    
-    return wc_price($final_total); 
+
+    return wc_price($final_total);
   }
   return $cart_subtotal;
-}; 
-         
-add_filter( 'woocommerce_cart_subtotal', 'ti_filter_woocommerce_cart_subtotal', 10, 3 ); 
+};
+
+add_filter( 'woocommerce_cart_subtotal', 'ti_filter_woocommerce_cart_subtotal', 10, 3 );
 
 
 /**
@@ -760,10 +749,10 @@ function get_volume_discount_for_dealer($product_id){
      foreach ($_pricing_rules as  $rules) {
        foreach ($rules['conditions'] as $roles_value) {
           if(isset($roles_value['args']['roles'])){
-            if($roles_value['args']['applies_to']=='roles' && in_array('Dealer' ,$roles_value['args']['roles'])){  
+            if($roles_value['args']['applies_to']=='roles' && in_array('Dealer' ,$roles_value['args']['roles'])){
               foreach ($rules['rules'] as $r_value) {
                   return array('value' => $r_value['amount'],'type'=>$r_value['type']);
-              }          
+              }
             }
           }
         }
@@ -775,11 +764,11 @@ function get_volume_discount_for_dealer($product_id){
 add_action( 'woocommerce_before_single_product_summary', 'ti_single_product_dealer_discount_calc', 10 );
 function ti_single_product_dealer_discount_calc(){
   global $post;
-  
+
   $user_id        = get_current_user_id();
   $role_name = tisf_get_user_role($user_id);
 
-  if($role_name=='Dealer'){   
+  if($role_name=='Dealer'){
 
     wp_register_script( 'accounting', plugin_dir_path('/woocommerce/assets/js/accounting/accounting.min.js') );
     wp_enqueue_script( 'accounting' );
@@ -789,7 +778,7 @@ function ti_single_product_dealer_discount_calc(){
     $dealer_volume_discount=get_volume_discount_for_dealer($post->ID);
     //print_r($dealer_volume_discount);
     wp_localize_script( 'measure_calc_custom', 'dealer_volume_discount',
-          array( 
+          array(
               'value' => $dealer_volume_discount['value'],
               'type' => $dealer_volume_discount['type'],
           )
@@ -797,19 +786,19 @@ function ti_single_product_dealer_discount_calc(){
   }
 
 }
-// define the woocommerce_get_price_html callback 
-function ti_woocommerce_get_price_html( $price, $instance ) { 
+// define the woocommerce_get_price_html callback
+function ti_woocommerce_get_price_html( $price, $instance ) {
     global $post,$product,$woocommerce;
 
   $user_id        = get_current_user_id();
   $role_name = tisf_get_user_role($user_id);
 
-  if($role_name=='Dealer'){   
+  if($role_name=='Dealer'){
     $price='';
     $price_data =get_post_meta($post->ID,'_price',false);
-    
+
     $discount_data=get_volume_discount_for_dealer($post->ID);
-    
+
     if($discount_data['type']=='price_discount'){
       $min=current($price_data)-$discount_data['value'];
       $max=end($price_data)-$discount_data['value'];
@@ -824,11 +813,11 @@ function ti_woocommerce_get_price_html( $price, $instance ) {
     }
 
     $price.='<span class="woocommerce-Price-currencySymbol">'.woocommerce_price($min).' – </span> <span class="woocommerce-Price-currencySymbol">'.woocommerce_price($max).'</span>';
-  
+
   }
-  return $price; 
-};          
-add_filter( 'woocommerce_get_price_html', 'ti_woocommerce_get_price_html', 10, 2 ); 
+  return $price;
+};
+add_filter( 'woocommerce_get_price_html', 'ti_woocommerce_get_price_html', 10, 2 );
 
 
 /**
@@ -840,6 +829,7 @@ function ti_remove_password_strength() {
   }
 }
 add_action( 'wp_print_scripts', 'ti_remove_password_strength', 10 );
+
 
 
 
