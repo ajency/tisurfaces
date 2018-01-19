@@ -881,5 +881,18 @@ function cart_update_qty_script() {
 }
 
 
+function caction_woocommerce_after_add_to_cart_button(  ) { 
+      ?>
+    <script>
+     // console.log(jQuery('.woocommerce-message').find('.wc-forward.btn-link').length)
+      if(jQuery('.woocommerce-message').find('.wc-forward.btn-link').length>0)
+      {
+        jQuery(window).scrollTop(200);
+      } 
+    </script>
+    <?php
+}; 
+         
+add_action( 'woocommerce_after_add_to_cart_button', 'caction_woocommerce_after_add_to_cart_button', 10, 0 ); 
 
 // custom code finish
